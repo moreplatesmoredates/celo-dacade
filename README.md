@@ -5,7 +5,10 @@ Trans Pharma is a decentralized market for the sale of hormone medications speci
 Users addresses are encrypted so that only the seller can read them. 
 
 This is an extension to the base application
-Features
+
+--------------------------------
+
+Features:
 
 - Items can go out of stock
 
