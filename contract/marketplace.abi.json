@@ -5,11 +5,16 @@
 				"internalType": "uint256",
 				"name": "_index",
 				"type": "uint256"
+			},
+			{
+				"internalType": "string",
+				"name": "_encrypted_message",
+				"type": "string"
 			}
 		],
 		"name": "buyProduct",
 		"outputs": [],
-		"stateMutability": "payable",
+		"stateMutability": "nonpayable",
 		"type": "function"
 	},
 	{
@@ -20,6 +25,31 @@
 				"internalType": "uint256",
 				"name": "",
 				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "readOrders",
+		"outputs": [
+			{
+				"components": [
+					{
+						"internalType": "string",
+						"name": "encrypted_message",
+						"type": "string"
+					},
+					{
+						"internalType": "uint256",
+						"name": "product_id",
+						"type": "uint256"
+					}
+				],
+				"internalType": "struct Marketplace.Order[]",
+				"name": "",
+				"type": "tuple[]"
 			}
 		],
 		"stateMutability": "view",
@@ -78,6 +108,19 @@
 		"inputs": [
 			{
 				"internalType": "string",
+				"name": "_pgp_public",
+				"type": "string"
+			}
+		],
+		"name": "setVendorsPublicPGP",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "string",
 				"name": "_name",
 				"type": "string"
 			},
@@ -92,13 +135,13 @@
 				"type": "string"
 			},
 			{
-				"internalType": "string",
-				"name": "_location",
-				"type": "string"
+				"internalType": "uint256",
+				"name": "_price",
+				"type": "uint256"
 			},
 			{
 				"internalType": "uint256",
-				"name": "_price",
+				"name": "_stock",
 				"type": "uint256"
 			}
 		],

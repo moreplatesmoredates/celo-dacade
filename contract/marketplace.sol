@@ -24,32 +24,48 @@ contract Marketplace {
         string name;
         string image;
         string description;
-        string location;
         uint price;
-        uint sold;
+        uint stock;
+    }
+    
+    struct Order {
+        string encrypted_message;
+        uint product_id;
     }
 
     mapping (uint => Product) internal products;
+    mapping (address => string) internal ownerPGP;
+    mapping (address => Order[]) internal orders;
+    
+    
+    modifier inStock(uint _index) {
+        require(products[_index].stock > 0);
+        _;
+    }
+    
+    function setVendorsPublicPGP(string memory _pgp_public) public {
+        ownerPGP[msg.sender] = _pgp_public;
+    }
 
     function writeProduct(
         string memory _name,
         string memory _image,
         string memory _description, 
-        string memory _location, 
-        uint _price
+        uint _price, 
+        uint _stock
     ) public {
-        uint _sold = 0;
         products[productsLength] = Product(
             payable(msg.sender),
             _name,
             _image,
             _description,
-            _location,
             _price,
-            _sold
+            _stock
         );
         productsLength++;
+        
     }
+    
 
     function readProduct(uint _index) public view returns (
         address payable,
@@ -65,13 +81,28 @@ contract Marketplace {
             products[_index].name, 
             products[_index].image, 
             products[_index].description, 
-            products[_index].location, 
+            ownerPGP[products[_index].owner],
             products[_index].price,
-            products[_index].sold
+            products[_index].stock
         );
     }
     
-    function buyProduct(uint _index) public payable  {
+    function readOrders() public view returns (
+        Order[] memory
+    ) {
+        return (
+            orders[msg.sender]
+        );
+    }
+    
+    function createOrder(address _seller, string memory _encrypted_message, uint _product_id) private {
+        orders[_seller].push(Order(
+            _encrypted_message,
+            _product_id
+        ));
+    }
+
+    function buyProduct(uint _index, string memory _encrypted_message) public inStock(_index) {
         require(
           IERC20Token(cUsdTokenAddress).transferFrom(
             msg.sender,
@@ -79,8 +110,9 @@ contract Marketplace {
             products[_index].price
           ),
           "Transfer failed."
-        );
-        products[_index].sold++;
+        ); 
+        createOrder(products[_index].owner, _encrypted_message, _index);
+        products[_index].stock--;
     }
     
     function getProductsLength() public view returns (uint) {
