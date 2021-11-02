@@ -40,21 +40,43 @@
       }
     </style>
 
-    <title>Street Food Kigali</title>
+    <title>Trans Pharma</title>
   </head>
   <body>
     <div class="container mt-2" style="max-width: 72em">
       <nav class="navbar bg-white navbar-light">
         <div class="container-fluid">
-          <span class="navbar-brand m-0 h4 fw-bold">Street Food Kigali</span>
+          <span class="navbar-brand m-0 h4 fw-bold">Trans Pharma</span>
           <span class="nav-link border rounded-pill bg-light">
             <span id="balance">0</span>
             cUSD
           </span>
+          
         </div>
       </nav>
       <div class="alert alert-warning sticky-top mt-2" role="alert">
         <span id="notification">⌛ Loading...</span>
+      </div>
+      <div class="input-group mb-3" id="pgp-section">
+        <input
+          type="text"
+          class="form-control"
+          placeholder="Your PGP public key"
+          id="your-public-pgp"
+        />
+        <div class="input-group-append">
+          <button
+            class="btn btn-outline-secondary submit-pgp"
+            type="button"
+          >
+            Update
+          </button>
+        </div>
+      </div>
+      <div id="orders-desc">
+        Orders: 
+        <ul id="my-orders">
+        </ul>
       </div>
 
       <div class="mb-4" style="margin-top: 4em">
@@ -116,17 +138,17 @@
                 <div class="col">
                   <input
                     type="text"
-                    id="newLocation"
+                    id="newPrice"
                     class="form-control mb-2"
-                    placeholder="Enter location"
+                    placeholder="Enter price"
                   />
                 </div>
                 <div class="col">
                   <input
                     type="text"
-                    id="newPrice"
+                    id="newStock"
                     class="form-control mb-2"
-                    placeholder="Enter price"
+                    placeholder="Enter stock"
                   />
                 </div>
               </div>

@@ -82,13 +82,18 @@ const getOrders = async function () {
       product_id: o.product_id,
     });
   });
-  let list_el = document.querySelector("#my-orders");
-  _orders_obj.forEach((o) => {
-    let child = document.createElement('li');
-    child.className = "list-group-item d-flex justify-content-between align-items-center";
-    child.innerHTML = `ID: ${o.product_id}, Encrypted Message: ${o.encrypted_message}`;
-    list_el.appendChild(child)
-  });
+  if (_orders_obj.length > 0) {
+    let list_el = document.querySelector("#my-orders");
+    _orders_obj.forEach((o) => {
+      let child = document.createElement("li");
+      child.className =
+        "list-group-item d-flex justify-content-between align-items-center";
+      child.innerHTML = `ID: ${o.product_id}, Encrypted Message: ${o.encrypted_message}`;
+      list_el.appendChild(child);
+    });
+  } else {
+    document.querySelector('#orders-desc').innerText = "You have received no orders"
+  }
 };
 
 function renderProducts() {
