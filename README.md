@@ -18,6 +18,8 @@ Features:
 
 - Create orders with smart contract, so that sellers can distribute items
 
+- Sellers can refund orders to buyers
+
 # Install
 
 ```
