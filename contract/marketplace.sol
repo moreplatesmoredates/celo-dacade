@@ -31,11 +31,13 @@ contract Marketplace {
     struct Order {
         string encrypted_message;
         uint product_id;
+        address payable buyer;
     }
 
     mapping (uint => Product) internal products;
     mapping (address => string) internal ownerPGP;
     mapping (address => Order[]) internal orders;
+    mapping (address => uint) internal ordersLength;
     
     
     modifier inStock(uint _index) {
@@ -98,8 +100,29 @@ contract Marketplace {
     function createOrder(address _seller, string memory _encrypted_message, uint _product_id) private {
         orders[_seller].push(Order(
             _encrypted_message,
-            _product_id
+            _product_id,
+            payable(msg.sender)
         ));
+        ordersLength[_seller]++;
+    }
+    
+    function refundOrder(uint _index) public {
+        uint length = getOrdersLength();
+        if (_index >= length) return;
+        require(
+          IERC20Token(cUsdTokenAddress).transferFrom(
+            msg.sender,
+             orders[msg.sender][_index].buyer,
+            products[orders[msg.sender][_index].product_id].price
+          ),
+          "Transfer failed."
+        ); 
+        products[orders[msg.sender][_index].product_id].stock++;
+        for (uint i = _index; i<length-1; i++){
+             orders[msg.sender][i] =  orders[msg.sender][i+1];
+        }
+        delete orders[msg.sender][length-1];
+        ordersLength[msg.sender]--;
     }
 
     function buyProduct(uint _index, string memory _encrypted_message) public inStock(_index) {
@@ -117,5 +140,9 @@ contract Marketplace {
     
     function getProductsLength() public view returns (uint) {
         return (productsLength);
+    }
+    
+    function getOrdersLength() public view returns (uint) {
+        return (ordersLength[msg.sender]);
     }
 }

@@ -19,6 +19,19 @@
 	},
 	{
 		"inputs": [],
+		"name": "getOrdersLength",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
 		"name": "getProductsLength",
 		"outputs": [
 			{
@@ -45,6 +58,11 @@
 						"internalType": "uint256",
 						"name": "product_id",
 						"type": "uint256"
+					},
+					{
+						"internalType": "address payable",
+						"name": "buyer",
+						"type": "address"
 					}
 				],
 				"internalType": "struct Marketplace.Order[]",
@@ -102,6 +120,19 @@
 			}
 		],
 		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "_index",
+				"type": "uint256"
+			}
+		],
+		"name": "refundOrder",
+		"outputs": [],
+		"stateMutability": "nonpayable",
 		"type": "function"
 	},
 	{

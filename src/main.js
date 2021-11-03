@@ -3,9 +3,8 @@ import { newKitFromWeb3 } from "@celo/contractkit";
 import BigNumber from "bignumber.js";
 import marketplaceAbi from "../contract/marketplace.abi.json";
 import erc20Abi from "../contract/erc20.abi.json";
-
 const ERC20_DECIMALS = 18;
-const MPContractAddress = "0x398486Fd366Ed4eE766929BC9a70F6Cc09938878";
+const MPContractAddress = "0x4F885E607B389b2EDEE64A5406C6eF85ff2349c0";
 const cUSDContractAddress = "0x874069Fa1Eb16D44d622F2e0Ca25eeA172369bC1";
 
 let kit;
@@ -77,22 +76,26 @@ const getOrders = async function () {
   let _orders = await contract.methods.readOrders().call();
   let _orders_obj = [];
   _orders.forEach((o) => {
-    _orders_obj.push({
-      encrypted_message: o.encrypted_message,
-      product_id: o.product_id,
-    });
+    if (o.encrypted_message) {
+      _orders_obj.push({
+        encrypted_message: o.encrypted_message,
+        product_id: o.product_id,
+      });
+    }
   });
   if (_orders_obj.length > 0) {
     let list_el = document.querySelector("#my-orders");
-    _orders_obj.forEach((o) => {
+    list_el.innerHTML = "";
+    _orders_obj.forEach((o, index) => {
       let child = document.createElement("li");
       child.className =
         "list-group-item d-flex justify-content-between align-items-center";
-      child.innerHTML = `ID: ${o.product_id}, Encrypted Message: ${o.encrypted_message}`;
+      child.innerHTML = `ProductID: ${o.product_id}, Encrypted Message: ${o.encrypted_message} <button index=${index} type="button" class="btn btn-success refund">Refund</button>`;
       list_el.appendChild(child);
     });
   } else {
-    document.querySelector('#orders-desc').innerText = "You have received no orders"
+    document.querySelector("#orders-desc").innerText =
+      "You have received no orders";
   }
 };
 
@@ -225,7 +228,7 @@ document.querySelector("#marketplace").addEventListener("click", async (e) => {
   if (e.target.className.includes("buyBtn")) {
     const index = e.target.id;
     const item_el = document.querySelector("#marketplace").childNodes[index];
-    const encrypted_message = item_el.querySelector("#encrypted-message").value;
+    const encrypted_message = item_el.querySelector("#encrypted-message").value || "No message provided by buyer.";
     console.log(encrypted_message);
     notification("⌛ Waiting for payment approval...");
     try {
@@ -249,7 +252,6 @@ document.querySelector("#marketplace").addEventListener("click", async (e) => {
 });
 document.querySelector("#pgp-section").addEventListener("click", async (e) => {
   if (e.target.className.includes("submit-pgp")) {
-    console.log("yo");
     const pgp = document.querySelector("#your-public-pgp").value;
     console.log(pgp);
     notification("⌛ Waiting for PGP public key change approval...");
@@ -263,6 +265,40 @@ document.querySelector("#pgp-section").addEventListener("click", async (e) => {
       getBalance();
       getOrders();
       document.querySelector("#your-public-pgp").value = "";
+    } catch (error) {
+      notification(`⚠️ ${error}.`);
+    }
+  }
+});
+
+document.querySelector("#my-orders").addEventListener("click", async (e) => {
+  if (e.target.className.includes("refund")) {
+    let index = parseInt(e.target.getAttribute("index"));
+    let price = products[index].price;
+    console.log(index);
+    notification("⌛ Waiting for refund approval...");
+    try {
+      await approve(price);
+    } catch (error) {
+      notification(`⚠️ ${error}.`);
+    }
+    notification(
+      `⌛ Awaiting refund order: ${index} for ${price
+        .shiftedBy(-ERC20_DECIMALS)
+        .toFixed(2)} cUSD"...`
+    );
+    try {
+      const result = await contract.methods
+        .refundOrder(index)
+        .send({ from: kit.defaultAccount });
+      notification(
+        `🎉 You successfully refunded order: ${index} for ${price
+          .shiftedBy(-ERC20_DECIMALS)
+          .toFixed(2)} cUSD."`
+      );
+      getProducts();
+      getBalance();
+      getOrders();
     } catch (error) {
       notification(`⚠️ ${error}.`);
     }
