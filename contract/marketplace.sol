@@ -127,7 +127,7 @@ contract Marketplace {
         
     }
     
-    function refundOrder(uint _index) public {
+      function refundOrder(uint _index) public isProductOwner(_index) {
         uint length = getOrdersLength();
         if (_index >= length) return;
         require(
