@@ -203,7 +203,6 @@ window.addEventListener("load", async () => {
 document
   .querySelector("#newProductBtn")
   .addEventListener("click", async (e) => {
-    console.log("ss");
     const params = [
       document.getElementById("newProductName").value,
       document.getElementById("newImgUrl").value,
@@ -230,7 +229,6 @@ document.querySelector("#marketplace").addEventListener("click", async (e) => {
     const index = e.target.id;
     const item_el = document.querySelector("#marketplace").childNodes[index];
     const encrypted_message = item_el.querySelector("#encrypted-message").value || "No message provided by buyer.";
-    console.log(encrypted_message);
     notification("⌛ Waiting for payment approval...");
     try {
       await approve(products[index].price);
@@ -254,7 +252,6 @@ document.querySelector("#marketplace").addEventListener("click", async (e) => {
 document.querySelector("#pgp-section").addEventListener("click", async (e) => {
   if (e.target.className.includes("submit-pgp")) {
     const pgp = document.querySelector("#your-public-pgp").value;
-    console.log(pgp);
     notification("⌛ Waiting for PGP public key change approval...");
     notification(`⌛ Awaiting change PGP public key"...`);
     try {
@@ -276,7 +273,6 @@ document.querySelector("#my-orders").addEventListener("click", async (e) => {
   if (e.target.className.includes("refund")) {
     let index = parseInt(e.target.getAttribute("index"));
     let price = products[index].price;
-    console.log(index);
     notification("⌛ Waiting for refund approval...");
     try {
       await approve(price);
