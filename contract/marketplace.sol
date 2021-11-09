@@ -32,16 +32,22 @@ contract Marketplace {
         string encrypted_message;
         uint product_id;
         address payable buyer;
+        bool refunded;
     }
 
     mapping (uint => Product) internal products;
     mapping (address => string) internal ownerPGP;
     mapping (address => Order[]) internal orders;
     mapping (address => uint) internal ordersLength;
-    
+    mapping (address => uint) internal validOrdersLength;
     
     modifier inStock(uint _index) {
         require(products[_index].stock > 0);
+        _;
+    }
+    
+    modifier isProductOwner(uint _index) {
+        require(products[_index].owner == msg.sender);
         _;
     }
     
@@ -92,8 +98,20 @@ contract Marketplace {
     function readOrders() public view returns (
         Order[] memory
     ) {
+        // selects all the orders that havent been refunded and returns them
+        Order[] memory validorders = new Order[](validOrdersLength[msg.sender]);
+        uint len =  ordersLength[msg.sender];
+        uint j = 0;
+        for (uint i = 0; i<len; i++){
+            if (! orders[msg.sender][i].refunded)
+            {
+                validorders[j] = (orders[msg.sender][i]);
+                j++;
+            }
+             
+        }
         return (
-            orders[msg.sender]
+            validorders
         );
     }
     
@@ -101,12 +119,15 @@ contract Marketplace {
         orders[_seller].push(Order(
             _encrypted_message,
             _product_id,
-            payable(msg.sender)
+            payable(msg.sender),
+            false
         ));
         ordersLength[_seller]++;
+        validOrdersLength[_seller]++;
+        
     }
     
-    function refundOrder(uint _index) public {
+      function refundOrder(uint _index) public isProductOwner(_index) {
         uint length = getOrdersLength();
         if (_index >= length) return;
         require(
@@ -118,11 +139,11 @@ contract Marketplace {
           "Transfer failed."
         ); 
         products[orders[msg.sender][_index].product_id].stock++;
-        for (uint i = _index; i<length-1; i++){
-             orders[msg.sender][i] =  orders[msg.sender][i+1];
-        }
-        delete orders[msg.sender][length-1];
-        ordersLength[msg.sender]--;
+        
+        orders[msg.sender][_index].refunded = true;
+        validOrdersLength[msg.sender]--;
+        
+        
     }
 
     function buyProduct(uint _index, string memory _encrypted_message) public inStock(_index) {
@@ -136,6 +157,12 @@ contract Marketplace {
         ); 
         createOrder(products[_index].owner, _encrypted_message, _index);
         products[_index].stock--;
+    }
+    
+    function increaseStock(uint _index, uint quantity) public isProductOwner(_index) {
+        // add to a product's current stock
+        products[_index].stock += quantity;
+        
     }
     
     function getProductsLength() public view returns (uint) {
