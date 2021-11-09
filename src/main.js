@@ -234,7 +234,7 @@ document.querySelector("#marketplace").addEventListener("click", async (e) => {
     try {
       await approve(products[index].price);
     } catch (error) {
-      notification(`⚠️ ${error}.`);
+      notification(`⚠️ An error has occured. Check you have enough CELO for gas and that your wallet is connected.`);
     }
     notification(`⌛ Awaiting payment for "${products[index].name}"...`);
     try {
@@ -246,7 +246,7 @@ document.querySelector("#marketplace").addEventListener("click", async (e) => {
       getBalance();
       getOrders();
     } catch (error) {
-      notification(`⚠️ ${error}.`);
+      notification(`⚠️ An error has occured. Check you have enough cUSD for this product and that your wallet is connected.`);
     }
   }
 });
@@ -266,7 +266,7 @@ document.querySelector("#pgp-section").addEventListener("click", async (e) => {
       getOrders();
       document.querySelector("#your-public-pgp").value = "";
     } catch (error) {
-      notification(`⚠️ ${error}.`);
+      notification(`⚠️ An error has occured. Check you have enough CELO for gas and that your wallet is connected.`);
     }
   }
 });
@@ -280,7 +280,7 @@ document.querySelector("#my-orders").addEventListener("click", async (e) => {
     try {
       await approve(price);
     } catch (error) {
-      notification(`⚠️ ${error}.`);
+      notification(`⚠️ An error has occured. Check you have enough CELO for gas and that your wallet is connected.`);
     }
     notification(
       `⌛ Awaiting refund order: ${index} for ${price
@@ -300,7 +300,7 @@ document.querySelector("#my-orders").addEventListener("click", async (e) => {
       getBalance();
       getOrders();
     } catch (error) {
-      notification(`⚠️ ${error}.`);
+      notification(`⚠️ An error has occured. Check you have enough cUSD for this refund and that your wallet is connected.`);
     }
   }
 });
