@@ -218,7 +218,7 @@ document
         .writeProduct(...params)
         .send({ from: kit.defaultAccount });
     } catch (error) {
-      notification(`⚠️ ${error}.`);
+      notification(`⚠️ An error has occured. Check you have enough CELO for gas and that your wallet is connected.`);
     }
     notification(`🎉 You successfully added "${params[0]}".`);
     getProducts();
